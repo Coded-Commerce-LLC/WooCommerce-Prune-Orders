@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin name: WooCommerce Prune Orders
+ * Plugin Name: WooCommerce Prune Orders
  * Plugin URI: https://github.com/Coded-Commerce-LLC/WooCommerce-Prune-Orders
  * Description: Adds a tool to the WooCommerce tools page which puts orders of selected status into the trash where they can be permanently deleted.
  * Version: 1.0
