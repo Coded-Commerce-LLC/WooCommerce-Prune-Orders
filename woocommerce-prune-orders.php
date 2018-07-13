@@ -6,6 +6,8 @@
  * Version: 1.0
  * Author: Coded Commerce, LLC
  * Author URI: https://github.com/Coded-Commerce-LLC
+ * WC requires at least: 1.0
+ * WC tested up to: 3.4.3
  * License: GPLv2 or later
  * Text Domain: woocommerce-prune-orders
  */
