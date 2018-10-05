@@ -13,8 +13,9 @@
  */
 
 // WordPress Or WooCommerce Hooks
-add_filter( 'woocommerce_debug_tools', [ 'woo_prune_orders', 'woocommerce_debug_tools' ] );
+add_action( 'admin_enqueue_scripts', [ 'woo_prune_orders', 'admin_enqueue_scripts' ] );
 add_action( 'plugins_loaded',  [ 'woo_prune_orders', 'plugins_loaded' ] );
+add_filter( 'woocommerce_debug_tools', [ 'woo_prune_orders', 'woocommerce_debug_tools' ] );
 
 // Plugin Class
 class woo_prune_orders {
@@ -24,22 +25,22 @@ class woo_prune_orders {
 		global $wpdb;
 
 		// Security Check
-		if( ! current_user_can( 'manage_woocommerce' ) ) { return; }
+		if( ! current_user_can( 'manage_woocommerce' ) ) { return false; }
 
 		// Ensure Action Provided
-		if( empty( $_GET['action'] ) ) { return; }
+		if( empty( $_GET['action'] ) ) { return false; }
 
 		// Map To WooCommerce Order Status
 		$status_mappings = [
 			'wc-cancelled' => 'prune_cancelled_orders',
 			'wc-completed' => 'prune_completed_orders',
 			'wc-failed' => 'prune_failed_orders',
-			'wc-on-hold' => 'prune_onhold_orders',
 			'wc-pending' => 'prune_pending_orders',
 			'wc-refunded' => 'prune_refunded_orders',
 		];
+		$post_date = isset( $_GET['post_date'] ) ? $_GET['post_date'] : '';
 		$post_status = array_search( $_GET['action'], $status_mappings );
-		if( empty( $post_status ) ) { return; }
+		if( empty( $post_status ) || empty( $post_date ) ) { return false; }
 
 		// Run Database Query
 		$rows = $wpdb->get_col(
@@ -48,8 +49,10 @@ class woo_prune_orders {
 					SELECT ID FROM $wpdb->posts
 					WHERE post_type = 'shop_order'
 					AND post_status = %s
+					AND post_date <= %s
 				",
-				$post_status
+				$post_status,
+				date( 'Y-m-d H:i:s', strtotime( $post_date ) )
 			)
 		);
 
@@ -100,19 +103,6 @@ class woo_prune_orders {
 				__( 'Are you sure?', 'woocommerce-prune-orders' )
 			),
 		];
-		/*
-		$tools['prune_onhold_orders'] = [
-			'button' => __( 'Trash On Hold orders', 'woocommerce-prune-orders' ),
-			'callback' => [ 'woo_prune_orders', 'run_tool' ],
-			'name' => __( 'Trash all On Hold WooCommerce orders', 'woocommerce-prune-orders' ),
-			'desc' => sprintf(
-				"<strong class='red'>%s</strong> %s %s",
-				__( 'Caution!', 'woocommerce-prune-orders' ),
-				__( 'This option will move all On Hold orders to the trash.', 'woocommerce-prune-orders' ),
-				__( 'Are you sure?', 'woocommerce-prune-orders' )
-			),
-		];
-		*/
 		$tools['prune_pending_orders'] = [
 			'button' => __( 'Trash Pending orders', 'woocommerce-prune-orders' ),
 			'callback' => [ 'woo_prune_orders', 'run_tool' ],
@@ -138,8 +128,18 @@ class woo_prune_orders {
 		return $tools;
 	}
 
+	// jQuery For Tools Page
+	static function admin_enqueue_scripts( $page ) {
+		if( $page != 'woocommerce_page_wc-status' ) { return; }
+		wp_enqueue_script(
+			'woocommerce-prune-orders', plugin_dir_url( __FILE__ ) . 'woocommerce-prune-orders.js'
+		);
+	}
+
 	// Load Translations
 	static function plugins_loaded() {
-		load_plugin_textdomain( 'woocommerce-prune-orders', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+		load_plugin_textdomain(
+			'woocommerce-prune-orders', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/'
+		);
 	}
 }
