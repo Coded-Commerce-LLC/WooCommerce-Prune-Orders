@@ -59,12 +59,10 @@ class woo_prune_orders {
 		}
 
 		// Response
-		return wp_sprintf(
-			"%d %s",
-			sizeof( $rows ),
-			__( 'orders were moved to the trash.', 'woocommerce-prune-orders' )
-		);
-		return true;
+		$msg_singular = __( 'order was moved to the trash.', 'woocommerce-prune-orders' );
+		$msg_plural = __( 'orders were moved to the trash.', 'woocommerce-prune-orders' );
+		$message = sizeof( $rows ) === 1 ? $msg_singular : $msg_plural;
+		return sizeof( $rows ) . ' ' . $message;
 	}
 
 	// Adds Tools To WooCommerce
