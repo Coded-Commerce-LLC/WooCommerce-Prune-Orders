@@ -17,8 +17,9 @@ If you empty the WP Admin > WooCommerce > Orders > Trash with hundreds of orders
 == Screenshots ==
  
 1. Displays the tools added into WP Admin > WooCommerce > Status > Tools section.
-2. Displays one of the tools after being ran with some orders.
-3. Displays the orders just moved into the trash.
+2. Displays a prompt for the date to trim orders up to.
+3. Displays one of the tools after being ran with some orders.
+4. Displays the orders just moved into the trash.
 
 == Changelog ==
 
