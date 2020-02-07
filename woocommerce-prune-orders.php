@@ -3,19 +3,85 @@
  * Plugin Name: WooCommerce Prune Orders
  * Plugin URI: https://github.com/Coded-Commerce-LLC/WooCommerce-Prune-Orders
  * Description: Adds a tool to the WooCommerce tools page which puts orders of selected status into the trash where they can be permanently deleted.
- * Version: 1.1
+ * Version: 1.2
  * Author: Coded Commerce, LLC
- * Author URI: https://github.com/Coded-Commerce-LLC
- * WC requires at least: 1.0
- * WC tested up to: 3.4.5
+ * Author URI: https://codedcommerce.com
+ * WC requires at least: 3.0
+ * WC tested up to: 3.9.1
  * License: GPLv2 or later
- * Text Domain: woocommerce-prune-orders
  */
 
-// WordPress Or WooCommerce Hooks
-add_action( 'admin_enqueue_scripts', [ 'woo_prune_orders', 'admin_enqueue_scripts' ] );
-add_action( 'plugins_loaded',  [ 'woo_prune_orders', 'plugins_loaded' ] );
-add_filter( 'woocommerce_debug_tools', [ 'woo_prune_orders', 'woocommerce_debug_tools' ] );
+
+// jQuery For Tools Page
+add_action( 'admin_enqueue_scripts', function( $page ) {
+	if( $page != 'woocommerce_page_wc-status' ) { return; }
+	wp_enqueue_script(
+		'woocommerce-prune-orders',
+		plugin_dir_url( __FILE__ ) . 'woocommerce-prune-orders.js'
+	);
+} );
+
+
+// Adds Tools To WooCommerce
+add_filter( 'woocommerce_debug_tools', function( $tools ) {
+	$tools['prune_cancelled_orders'] = [
+		'button' => __( 'Trash Cancelled orders', 'woocommerce-prune-orders' ),
+		'callback' => [ 'woo_prune_orders', 'run_tool' ],
+		'name' => __( 'Trash all Cancelled WooCommerce orders', 'woocommerce-prune-orders' ),
+		'desc' => sprintf(
+			"<strong class='red'>%s</strong> %s %s",
+			__( 'Caution!', 'woocommerce-prune-orders' ),
+			__( 'This option will move all Cancelled orders to the trash.', 'woocommerce-prune-orders' ),
+			__( 'Are you sure?', 'woocommerce-prune-orders' )
+		),
+	];
+	$tools['prune_completed_orders'] = [
+		'button' => __( 'Trash Completed orders', 'woocommerce-prune-orders' ),
+		'callback' => [ 'woo_prune_orders', 'run_tool' ],
+		'name' => __( 'Trash all Completed WooCommerce orders', 'woocommerce-prune-orders' ),
+		'desc' => sprintf(
+			"<strong class='red'>%s</strong> %s %s",
+			__( 'Caution!', 'woocommerce-prune-orders' ),
+			__( 'This option will move all Completed orders to the trash.', 'woocommerce-prune-orders' ),
+			__( 'Are you sure?', 'woocommerce-prune-orders' )
+		),
+	];
+	$tools['prune_failed_orders'] = [
+		'button' => __( 'Trash Failed orders', 'woocommerce-prune-orders' ),
+		'callback' => [ 'woo_prune_orders', 'run_tool' ],
+		'name' => __( 'Trash all Failed WooCommerce orders', 'woocommerce-prune-orders' ),
+		'desc' => sprintf(
+			"<strong class='red'>%s</strong> %s %s",
+			__( 'Caution!', 'woocommerce-prune-orders' ),
+			__( 'This option will move all Failed orders to the trash.', 'woocommerce-prune-orders' ),
+			__( 'Are you sure?', 'woocommerce-prune-orders' )
+		),
+	];
+	$tools['prune_pending_orders'] = [
+		'button' => __( 'Trash Pending orders', 'woocommerce-prune-orders' ),
+		'callback' => [ 'woo_prune_orders', 'run_tool' ],
+		'name' => __( 'Trash all Pending WooCommerce orders', 'woocommerce-prune-orders' ),
+		'desc' => sprintf(
+			"<strong class='red'>%s</strong> %s %s",
+			__( 'Caution!', 'woocommerce-prune-orders' ),
+			__( 'This option will move all Pending orders to the trash.', 'woocommerce-prune-orders' ),
+			__( 'Are you sure?', 'woocommerce-prune-orders' )
+		),
+	];
+	$tools['prune_refunded_orders'] = [
+		'button' => __( 'Trash Refunded orders', 'woocommerce-prune-orders' ),
+		'callback' => [ 'woo_prune_orders', 'run_tool' ],
+		'name' => __( 'Trash all Refunded WooCommerce orders', 'woocommerce-prune-orders' ),
+		'desc' => sprintf(
+			"<strong class='red'>%s</strong> %s %s",
+			__( 'Caution!', 'woocommerce-prune-orders' ),
+			__( 'This option will move all Refunded orders to the trash.', 'woocommerce-prune-orders' ),
+			__( 'Are you sure?', 'woocommerce-prune-orders' )
+		),
+	];
+	return $tools;
+} );
+
 
 // Plugin Class
 class woo_prune_orders {
@@ -68,78 +134,4 @@ class woo_prune_orders {
 		return sizeof( $rows ) . ' ' . $message;
 	}
 
-	// Adds Tools To WooCommerce
-	static function woocommerce_debug_tools( $tools ) {
-		$tools['prune_cancelled_orders'] = [
-			'button' => __( 'Trash Cancelled orders', 'woocommerce-prune-orders' ),
-			'callback' => [ 'woo_prune_orders', 'run_tool' ],
-			'name' => __( 'Trash all Cancelled WooCommerce orders', 'woocommerce-prune-orders' ),
-			'desc' => sprintf(
-				"<strong class='red'>%s</strong> %s %s",
-				__( 'Caution!', 'woocommerce-prune-orders' ),
-				__( 'This option will move all Cancelled orders to the trash.', 'woocommerce-prune-orders' ),
-				__( 'Are you sure?', 'woocommerce-prune-orders' )
-			),
-		];
-		$tools['prune_completed_orders'] = [
-			'button' => __( 'Trash Completed orders', 'woocommerce-prune-orders' ),
-			'callback' => [ 'woo_prune_orders', 'run_tool' ],
-			'name' => __( 'Trash all Completed WooCommerce orders', 'woocommerce-prune-orders' ),
-			'desc' => sprintf(
-				"<strong class='red'>%s</strong> %s %s",
-				__( 'Caution!', 'woocommerce-prune-orders' ),
-				__( 'This option will move all Completed orders to the trash.', 'woocommerce-prune-orders' ),
-				__( 'Are you sure?', 'woocommerce-prune-orders' )
-			),
-		];
-		$tools['prune_failed_orders'] = [
-			'button' => __( 'Trash Failed orders', 'woocommerce-prune-orders' ),
-			'callback' => [ 'woo_prune_orders', 'run_tool' ],
-			'name' => __( 'Trash all Failed WooCommerce orders', 'woocommerce-prune-orders' ),
-			'desc' => sprintf(
-				"<strong class='red'>%s</strong> %s %s",
-				__( 'Caution!', 'woocommerce-prune-orders' ),
-				__( 'This option will move all Failed orders to the trash.', 'woocommerce-prune-orders' ),
-				__( 'Are you sure?', 'woocommerce-prune-orders' )
-			),
-		];
-		$tools['prune_pending_orders'] = [
-			'button' => __( 'Trash Pending orders', 'woocommerce-prune-orders' ),
-			'callback' => [ 'woo_prune_orders', 'run_tool' ],
-			'name' => __( 'Trash all Pending WooCommerce orders', 'woocommerce-prune-orders' ),
-			'desc' => sprintf(
-				"<strong class='red'>%s</strong> %s %s",
-				__( 'Caution!', 'woocommerce-prune-orders' ),
-				__( 'This option will move all Pending orders to the trash.', 'woocommerce-prune-orders' ),
-				__( 'Are you sure?', 'woocommerce-prune-orders' )
-			),
-		];
-		$tools['prune_refunded_orders'] = [
-			'button' => __( 'Trash Refunded orders', 'woocommerce-prune-orders' ),
-			'callback' => [ 'woo_prune_orders', 'run_tool' ],
-			'name' => __( 'Trash all Refunded WooCommerce orders', 'woocommerce-prune-orders' ),
-			'desc' => sprintf(
-				"<strong class='red'>%s</strong> %s %s",
-				__( 'Caution!', 'woocommerce-prune-orders' ),
-				__( 'This option will move all Refunded orders to the trash.', 'woocommerce-prune-orders' ),
-				__( 'Are you sure?', 'woocommerce-prune-orders' )
-			),
-		];
-		return $tools;
-	}
-
-	// jQuery For Tools Page
-	static function admin_enqueue_scripts( $page ) {
-		if( $page != 'woocommerce_page_wc-status' ) { return; }
-		wp_enqueue_script(
-			'woocommerce-prune-orders', plugin_dir_url( __FILE__ ) . 'woocommerce-prune-orders.js'
-		);
-	}
-
-	// Load Translations
-	static function plugins_loaded() {
-		load_plugin_textdomain(
-			'woocommerce-prune-orders', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/'
-		);
-	}
 }

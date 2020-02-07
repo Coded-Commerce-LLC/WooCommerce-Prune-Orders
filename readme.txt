@@ -5,7 +5,7 @@ Tags: woocommerce, administrator, tool, trash, prune, trim, clean, performance
 Requires at least: 4.7
 Tested up to: 5.0
 Requires PHP: 5.6
-Stable tag: 1.1
+Stable tag: 1.2
 License: GPLv2 or later
 
 Adds tools to the WP Admin > WooCommerce > Status > Tools page to move all orders of the selected status and cutoff date into the trash, where they can then be permanently deleted to improve site performance.
@@ -23,11 +23,14 @@ If you empty the WP Admin > WooCommerce > Orders > Trash with hundreds of orders
 
 == Changelog ==
 
+= 1.2 on 2020-02-06 =
+* Updated: code cleanup and updating tested-to metadata.
+
 = 1.1 on 2018-10-04 =
-* Added: feature to set date to prune up to
-* Added: plugin metadata for WooCommerce
-* Updated: cleaned PHP array instances to PHP5.4 standard
-* Fixed: singular/plural response message
+* Added: feature to set date to prune up to.
+* Added: plugin metadata for WooCommerce.
+* Updated: cleaned PHP array instances to newer standard.
+* Fixed: singular/plural response message.
 
 = 1.0 on 2018-07-09 =
-* Initial commit
+* Initial commit.
