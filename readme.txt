@@ -24,6 +24,7 @@ If you empty the WP Admin > WooCommerce > Orders > Trash with hundreds of orders
 == Changelog ==
 
 = 1.2 on 2020-02-06 =
+* Added: settings shortcut into plugin action links.
 * Updated: code cleanup and updating tested-to metadata.
 
 = 1.1 on 2018-10-04 =

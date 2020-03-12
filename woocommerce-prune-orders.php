@@ -12,6 +12,19 @@
  */
 
 
+// Plugins Page Link To Settings
+add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), function( $links ) {
+	$settings = [
+		'settings' => sprintf(
+			'<a href="%s">%s</a>',
+			admin_url( 'admin.php?page=wc-status&tab=tools' ),
+			__( 'Settings', 'benchmark-email-lite' )
+		),
+	];
+	return array_merge( $settings, $links );
+} );
+
+
 // jQuery For Tools Page
 add_action( 'admin_enqueue_scripts', function( $page ) {
 	if( $page != 'woocommerce_page_wc-status' ) { return; }
