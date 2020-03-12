@@ -3,7 +3,7 @@ Contributors: seanconklin
 Donate link: https://codedcommerce.com/donate
 Tags: woocommerce, administrator, tool, trash, prune, trim, clean, performance
 Requires at least: 4.7
-Tested up to: 5.0
+Tested up to: 5.3.2
 Requires PHP: 5.6
 Stable tag: 1.2
 License: GPLv2 or later
